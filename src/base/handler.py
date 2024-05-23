@@ -230,6 +230,11 @@ def init_handlers():
                 await message.reply(f"删除成功：{params[1]}")
             else:
                 await message.reply(f"没有权限：{params[1]}")
+        votes = program.db.select("vote")
+        if len(votes) > 0:
+            await update_message(
+                votes[0]["msg_id"], json.dumps(await get_vote_message())
+            )
 
     @program.bot.command(regex="^投票.*")
     async def vote(message: PublicMessage):
@@ -258,6 +263,11 @@ def init_handlers():
             return
         program.db.delete("candidate", "1=1")
         await message.reply("删除成功")
+        votes = program.db.select("vote")
+        if len(votes) > 0:
+            await update_message(
+                votes[0]["msg_id"], json.dumps(await get_vote_message())
+            )
 
     @program.bot.command(regex="^启动投票.*")
     async def start_voting(message: PublicMessage):
