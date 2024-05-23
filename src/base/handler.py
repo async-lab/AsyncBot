@@ -13,7 +13,7 @@ def init_handlers():
     def channel_filter(message: Message) -> bool:
         return (
             isinstance(message, PublicMessage)
-            and message.channel.id == "4339250455451157"
+            and message.channel.id == program.channel_id
         )
 
     async def is_admin(message: Message) -> bool:

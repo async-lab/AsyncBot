@@ -11,16 +11,18 @@ class ContextProgram(Context):
         self.bot: Bot = None
         self.db: Db = None
         self.token = None
+        self.channel_id = None
 
 
 program: ContextProgram = ContextProgram()
 
 
-def init_program(bot: Bot, db: Db, token: str) -> None:
+def init_program(bot: Bot, db: Db, token: str, channel_id: str) -> None:
     global program
     program.bot = bot
     program.db = db
     program.token = token
+    program.channel_id = channel_id
     program.db.create_table(
         "candidate",
         {
