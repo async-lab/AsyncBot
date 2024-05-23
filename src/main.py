@@ -22,7 +22,7 @@ async def main():
         channel_id = input("Enter your channel id: ")
     db = Db(path=db_path)
     bot = Bot(token=token)
-    init_program(db=db, bot=bot, token=token)
+    init_program(db=db, bot=bot, token=token, channel_id=channel_id)
     init_handlers()
     task = asyncio.create_task(bot.start())
     done, pending = await asyncio.wait({task})
