@@ -319,3 +319,4 @@ def init_handlers():
             msg_id=votes[0]["msg_id"], content=json.dumps(await get_vote_message())
         )
         program.db.delete("vote", "1=1")
+        message.reply("投票已结束")
