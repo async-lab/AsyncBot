@@ -52,6 +52,16 @@ def init_handlers():
             data=json.dumps({"msg_id": msg_id, "content": content}),
         )
 
+    async def update_vote():
+        votes = program.db.select("vote")
+        if len(votes) == 0:
+            return
+        if int(datetime.now().timestamp()) > int(votes[0]["end"]):
+            return
+        await update_message(
+            msg_id=votes[0]["msg_id"], content=json.dumps(await get_vote_message())
+        )
+
     async def delete_message(msg_id: str):
         return await make_request(
             method="POST",
@@ -65,13 +75,17 @@ def init_handlers():
         if len(votes) == 0:
             return
         vote = votes[0]
+        end = datetime.fromtimestamp(int(vote["end"]))
         c = Card()
-        c.append(
-            Module.Countdown(
-                end=datetime.fromtimestamp(int(vote["end"])),
-                mode=Types.CountdownMode.HOUR,
+        if int(datetime.now().timestamp()) > int(vote["end"]):
+            c.append(Module.Header("投票已结束"))
+        else:
+            c.append(
+                Module.Countdown(
+                    end=datetime.fromtimestamp(int(vote["end"])),
+                    mode=Types.CountdownMode.HOUR,
+                )
             )
-        )
         candidates = program.db.select("candidate")
         if len(candidates) != 0:
             c.append(Module.Divider())
@@ -128,9 +142,7 @@ def init_handlers():
                 table_name="vote_counting",
                 condition=f"user_id='{user_id}' and candidate_id='{candidate_id}'",
             )
-            await update_message(
-                msg_id=vote["msg_id"], content=json.dumps(await get_vote_message())
-            )
+            await update_vote()
             return
 
         if vote["multi"] == 0:
@@ -147,9 +159,7 @@ def init_handlers():
                 "vote_id": vote["id"],
             },
         )
-        await update_message(
-            msg_id=vote["msg_id"], content=json.dumps(await get_vote_message())
-        )
+        await update_vote()
 
     @program.bot.command(regex="^用法.*")
     async def usage(message: PublicMessage):
@@ -184,11 +194,8 @@ def init_handlers():
             },
         )
         await message.reply(f"已添加 {params[1]}")
-        votes = program.db.select("vote")
-        if len(votes) > 0:
-            await update_message(
-                votes[0]["msg_id"], json.dumps(await get_vote_message())
-            )
+
+        await update_vote()
 
     @program.bot.command(regex="^查看.*")
     async def show_candidates(message: PublicMessage):
@@ -230,11 +237,8 @@ def init_handlers():
                 await message.reply(f"删除成功：{params[1]}")
             else:
                 await message.reply(f"没有权限：{params[1]}")
-        votes = program.db.select("vote")
-        if len(votes) > 0:
-            await update_message(
-                votes[0]["msg_id"], json.dumps(await get_vote_message())
-            )
+
+        await update_vote()
 
     @program.bot.command(regex="^投票.*")
     async def vote(message: PublicMessage):
@@ -243,6 +247,9 @@ def init_handlers():
         votes = program.db.select("vote")
         if len(votes) == 0:
             await message.reply("没有投票")
+            return
+        if int(datetime.now().timestamp()) > int(votes[0]["end"]):
+            await message.reply("投票已结束")
             return
         candidates = program.db.select("candidate")
         if len(candidates) == 0:
@@ -263,15 +270,10 @@ def init_handlers():
             return
         program.db.delete("candidate", "1=1")
         await message.reply("删除成功")
-        votes = program.db.select("vote")
-        if len(votes) > 0:
-            await update_message(
-                votes[0]["msg_id"], json.dumps(await get_vote_message())
-            )
+        await update_vote()
 
     @program.bot.command(regex="^启动投票.*")
     async def start_voting(message: PublicMessage):
-        global vote_msg_id
         if not channel_filter(message):
             return
         if not await is_admin(message):
@@ -300,3 +302,20 @@ def init_handlers():
         )
         program.db.update("vote", {"msg_id": res["msg_id"]}, "1=1")
         await message.reply(f"投票已启动，将在{days}天后结束")
+
+    @program.bot.command(regex="^结束投票.*")
+    async def end_voting(message: PublicMessage):
+        if not channel_filter(message):
+            return
+        if not await is_admin(message):
+            await message.reply("没有权限")
+            return
+        votes = program.db.select("vote", columns=["msg_id"])
+        if len(votes) == 0:
+            await message.reply("没有投票")
+            return
+        program.db.update("vote", {"end": "0"}, "1=1")
+        await update_message(
+            msg_id=votes[0]["msg_id"], content=json.dumps(await get_vote_message())
+        )
+        program.db.delete("vote", "1=1")
