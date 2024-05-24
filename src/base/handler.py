@@ -291,7 +291,7 @@ def init_handlers():
             await message.reply("参数错误")
             return
         votes = program.db.select("vote", columns=["msg_id"])
-        if len(votes) > 0:
+        if len(votes) > 0 and int(datetime.now().timestamp()) < int(votes[0]["end"]):
             await delete_message(votes[0]["msg_id"])
         program.db.delete("vote", "1=1")
         program.db.delete("vote_counting", "1=1")
