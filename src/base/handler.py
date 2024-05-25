@@ -90,8 +90,8 @@ def init_handlers():
         if len(candidates) != 0:
             c.append(Module.Divider())
             c.append(Module.Header("不可多选" if vote["multi"] == 0 else "可多选"))
-            c.append(Module.Divider())
             for candidate in candidates:
+                c.append(Module.Divider())
                 vote_count = len(
                     program.db.select(
                         table_name="vote_counting",
