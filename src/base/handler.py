@@ -161,7 +161,7 @@ def init_handlers():
         )
         await update_vote()
 
-    @program.bot.command(regex="^用法.*")
+    @program.bot.command(regex="^用法(?!\S).*")
     async def usage(message: PublicMessage):
         if not channel_filter(message):
             return
@@ -176,7 +176,7 @@ def init_handlers():
 """
         )
 
-    @program.bot.command(regex="^添加.*")
+    @program.bot.command(regex="^添加(?!\S).*")
     async def add_candidate(message: PublicMessage):
         if not channel_filter(message):
             return
@@ -198,7 +198,7 @@ def init_handlers():
 
         await update_vote()
 
-    @program.bot.command(regex="^查看.*")
+    @program.bot.command(regex="^查看(?!\S).*")
     async def show_candidates(message: PublicMessage):
         if not channel_filter(message):
             return
@@ -220,13 +220,13 @@ def init_handlers():
                 )
             await message.reply(CardMessage(c))
 
-    @program.bot.command(regex="^删除.*")
+    @program.bot.command(regex="^删除(?!\S).*")
     async def delete_candidate(message: PublicMessage):
         if not channel_filter(message):
             return
         params = message.content.split()
         if len(params) != 2:
-            await message.reply("参数错误")
+            await message.reply("参数错误(?!\S)")
             return
         candidates = program.db.select("candidate", condition=f"id='{params[1]}'")
         if len(candidates) == 0:
@@ -241,7 +241,7 @@ def init_handlers():
 
         await update_vote()
 
-    @program.bot.command(regex="^投票.*")
+    @program.bot.command(regex="^投票(?!\S).*")
     async def vote(message: PublicMessage):
         if not channel_filter(message):
             return
@@ -262,7 +262,7 @@ def init_handlers():
         )
         program.db.update("vote", {"msg_id": res["msg_id"]}, "1=1")
 
-    @program.bot.command(regex="^删除所有.*")
+    @program.bot.command(regex="^删除所有(?!\S).*")
     async def delete_candidates(message: PublicMessage):
         if not channel_filter(message):
             return
@@ -273,7 +273,7 @@ def init_handlers():
         await message.reply("删除成功")
         await update_vote()
 
-    @program.bot.command(regex="^启动投票.*")
+    @program.bot.command(regex="^启动投票(?!\S).*")
     async def start_voting(message: PublicMessage):
         if not channel_filter(message):
             return
@@ -304,7 +304,7 @@ def init_handlers():
         program.db.update("vote", {"msg_id": res["msg_id"]}, "1=1")
         await message.reply(f"投票已启动，将在{days}天后结束")
 
-    @program.bot.command(regex="^结束投票.*")
+    @program.bot.command(regex="^结束投票(?!\S).*")
     async def end_voting(message: PublicMessage):
         if not channel_filter(message):
             return
