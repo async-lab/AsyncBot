@@ -27,8 +27,9 @@ class Db:
     def insert(self, table_name: str, data: dict) -> None:
         with self.lock:
             columns_str = ", ".join(data.keys())
+            placeholders_str = ", ".join(["?"] * len(data))
             self.cursor.execute(
-                f"INSERT INTO {table_name} ({columns_str}) VALUES ({", ".join(['?' for _ in data.values()])})",
+                f"INSERT INTO {table_name} ({columns_str}) VALUES ({placeholders_str})",
                 (*data.values(),),
             )
             self.conn.commit()
