@@ -1,7 +1,7 @@
 [project]
-name = "tes"
+name = "AsyncBot"
 version = "0.1.0"
-description = "tes"
+description = "AsyncBot"
 readme = "README.md"
 requires-python = ">=3.9, <4.0"
 
@@ -12,3 +12,15 @@ adapters = [
 plugins = []
 plugin_dirs = ["src/plugins"]
 builtin_plugins = ["echo"]
+
+[tool.poetry]
+name = "AsyncBot"
+version = "0.1.0"
+description = "AsyncBot"
+authors = ["dsx137"]
+license = "OSLv3"
+
+[tool.poetry.dependencies]
+python = ">=3.9, <4.0"
+cohere = "^5.11.0"
+nb-cli = "^1.4.2"
