@@ -24,7 +24,7 @@ class Dify:
     }
 
     histories: typing.Mapping[str, typing.List[BotMessage]] = {}
-    history_max_tokens = 5120
+    history_max_tokens = 2560
 
     def __init__(self, api_key: str, base_url="https://api.dify.ai"):
         self.api_key = api_key
