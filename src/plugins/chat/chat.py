@@ -8,6 +8,7 @@ from nonebot.adapters.onebot.v11 import (
     PrivateMessageEvent,
     GroupMessageEvent,
     MessageEvent,
+    Bot,
 )
 from nonebot.utils import logger_wrapper
 import typing
@@ -39,11 +40,17 @@ def retry(func: typing.Callable[[None], T]) -> T:
 dify = Dify(api_key=plugin_config.api_key)
 
 
-async def is_group(event: GroupMessageEvent):
-    return True
+async def rule_check(bot: Bot, event: MessageEvent):
+    if event.message_type == "group":
+        return event.is_tome()
+    else:
+        return any(
+            friend["user_id"] == event.sender.user_id
+            for friend in await bot.get_friend_list()
+        )
 
 
-on_message_matcher = on_message(rule=Rule(is_group))
+on_message_matcher = on_message(rule=Rule(rule_check))
 
 
 @on_message_matcher.handle()
@@ -58,13 +65,12 @@ async def handler(event: MessageEvent = Depends(lambda event: event)) -> None:
 
     message = f"User: [{event.get_user_id()}]; Message: [{plain_message}]"
 
-    if event.is_tome():
-        response = retry(
-            lambda: dify.chat(
-                message=message,
-                session_id=session_id,
-            )
+    response = retry(
+        lambda: dify.chat(
+            message=message,
+            session_id=session_id,
         )
-        await on_message_matcher.send(response)
+    )
+    await on_message_matcher.send(response)
 
     return
