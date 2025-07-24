@@ -27,4 +27,4 @@ jobs:
           context: .
           file: Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository }}/async-bot:latest
+          tags: ghcr.io/${{ fromJSON(toJSON(github.repository)) }}/async-bot:latest
