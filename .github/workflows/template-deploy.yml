@@ -24,6 +24,10 @@ jobs:
           ONEBOT_V11_ACCESS_TOKEN: ${{ secrets.ONEBOT_V11_ACCESS_TOKEN }}
           API_KEY: ${{ secrets.API_KEY }}
         run: |
+          if [ -z "${ONEBOT_V11_WS_URLS}" ] || [ -z "${ONEBOT_V11_ACCESS_TOKEN}" ] || [ -z "${API_KEY}" ]; then
+            echo "Required environment variables are not set."
+            exit 1
+          fi
           export COMPOSE_PROJECT_NAME=async-bot
           docker compose pull
           docker compose up -d

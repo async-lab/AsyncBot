@@ -7,5 +7,3 @@ services:
       ONEBOT_V11_WS_URLS: ${ONEBOT_V11_WS_URLS}
       ONEBOT_V11_ACCESS_TOKEN: ${ONEBOT_V11_ACCESS_TOKEN}
       API_KEY: ${API_KEY}
-    volumes:
-      - ./data:/data
