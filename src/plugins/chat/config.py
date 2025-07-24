@@ -3,7 +3,7 @@ from nonebot import get_plugin_config
 
 
 class Config(BaseModel):
-    api_key: str = Field(..., alias="API_KEY")
+    api_key: str
 
 
 plugin_config = get_plugin_config(Config)
