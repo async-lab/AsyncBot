@@ -21,7 +21,9 @@ COPY --from=builder /app/.venv ./.venv
 COPY ./src ./src
 COPY ./pyproject.toml ./pyproject.toml
 
-RUN echo "API_KEY=" > .env
+RUN echo "API_KEY=" >> .env
+RUN echo "ONEBOT_V11_WS_URLS=" >> .env
+RUN echo "ONEBOT_V11_ACCESS_TOKEN=" >> .env
 
 CMD ["/bin/sh", "-c", "source .venv/bin/activate && nb run"]
 
