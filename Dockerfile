@@ -20,6 +20,6 @@ COPY --from=builder /app/.venv ./.venv
 
 COPY ./src ./src
 COPY ./pyproject.toml ./pyproject.toml
-COPY ./env.example ./.env
+COPY ./.env.example ./.env
 
 CMD ["/bin/sh", "-c", "source .venv/bin/activate && nb run"]
