@@ -1,0 +1,11 @@
+services:
+  async-bot:
+    image: ghcr.io/async-lab/async-bot:latest
+    restart: unless-stopped
+    environment:
+      - DRIVER=~websocket
+      - ONEBOT_V11_WS_URLS=${ONEBOT_V11_WS_URLS}
+      - ONEBOT_V11_ACCESS_TOKEN=${ONEBOT_V11_ACCESS_TOKEN}
+      - API_KEY=${API_KEY}
+    volumes:
+      - ./data:/data
